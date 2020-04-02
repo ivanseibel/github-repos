@@ -3,7 +3,17 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 import api from '../../services/api';
-import { Loading, Owner, IssueList } from './styles';
+import {
+  IssuesHeader,
+  Loading,
+  Owner,
+  IssueList,
+  Filters,
+  FilterButton,
+  Pages,
+  IssuesFooter,
+  NavButton,
+} from './styles';
 import Container from '../../components/Container';
 
 class Main extends Component {
@@ -19,35 +29,81 @@ class Main extends Component {
     repository: {},
     issues: [],
     loading: true,
+    loadingText: 'Loading...',
+    filter: 'open',
+    page: 1,
   };
 
   async componentDidMount() {
-    const { match } = this.props;
-    const repoName = decodeURIComponent(match.params.repository);
-
-    const [repo, issues] = await Promise.all([
-      api.get(`/repos/${repoName}`),
-      api.get(`/repos/${repoName}/issues`, {
-        params: {
-          state: 'open',
-          per_page: 5,
-          page: 1,
-        },
-      }),
-    ]);
-
-    this.setState({
-      loading: false,
-      issues: issues.data,
-      repository: repo.data,
-    });
+    this.getIssues();
   }
 
+  getIssues = async () => {
+    try {
+      const { match } = this.props;
+      const repoName = decodeURIComponent(match.params.repository);
+      const { filter, page } = this.state;
+
+      const [repo, issues] = await Promise.all([
+        api.get(`/repos/${repoName}`, { crossdomain: true }),
+        api.get(`/repos/${repoName}/issues`, {
+          params: {
+            state: filter,
+            per_page: 5,
+            page,
+          },
+          crossdomain: true,
+        }),
+      ]);
+
+      this.setState({
+        loading: false,
+        issues: issues.data,
+        repository: repo.data,
+      });
+    } catch (error) {
+      this.setState({
+        loadingText:
+          'Was not possible to get repository details.\nTry again later.',
+      });
+    }
+  };
+
+  handleFilterButtonClick = (e) => {
+    const newFilter = e.target.innerText;
+
+    this.setState({
+      filter: newFilter,
+    });
+
+    this.getIssues();
+  };
+
+  handlePageButtonClick = async (e) => {
+    const { page } = this.state;
+    const sumPage = e.target.innerText === 'next' ? 1 : -1;
+
+    await this.setState({ page: page + sumPage });
+
+    this.getIssues();
+  };
+
   render() {
-    const { loading, issues, repository } = this.state;
+    const {
+      loading,
+      issues,
+      repository,
+      filter,
+      loadingText,
+      page,
+    } = this.state;
 
     if (loading) {
-      return <Loading>Carregando</Loading>;
+      return (
+        <Loading>
+          <p>{loadingText}</p>
+        </Loading>
+      );
     }
 
     return (
@@ -60,6 +116,41 @@ class Main extends Component {
         </Owner>
 
         <IssueList>
+          <IssuesHeader>
+            <Filters>
+              <FilterButton
+                active={filter === 'open'}
+                onClick={this.handleFilterButtonClick}
+              >
+                open
+              </FilterButton>
+              <FilterButton
+                active={filter === 'closed'}
+                onClick={this.handleFilterButtonClick}
+              >
+                closed
+              </FilterButton>
+              <FilterButton
+                active={filter === 'all'}
+                onClick={this.handleFilterButtonClick}
+              >
+                all
+              </FilterButton>
+            </Filters>
+
+            <Pages>
+              <NavButton
+                active={!(page === 1)}
+                onClick={this.handlePageButtonClick}
+              >
+                prev
+              </NavButton>
+              <NavButton active onClick={this.handlePageButtonClick}>
+                next
+              </NavButton>
+            </Pages>
+          </IssuesHeader>
+
           {issues.map((issue) => (
             <li key={String(issue.id)}>
               <img src={issue.user.avatar_url} alt={issue.user.login} />
@@ -75,6 +166,9 @@ class Main extends Component {
             </li>
           ))}
         </IssueList>
+        <IssuesFooter>
+          <strong>Page: {page}</strong>
+        </IssuesFooter>
       </Container>
     );
   }

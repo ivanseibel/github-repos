@@ -8,6 +8,7 @@ export const Loading = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
+  white-space: pre-line;
 `;
 
 export const Owner = styled.header`
@@ -100,5 +101,84 @@ export const IssueList = styled.ul`
       font-size: 12px;
       color: #999;
     }
+  }
+`;
+
+export const IssuesHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const Filters = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+export const FilterButton = styled.button`
+  width: 60px;
+  height: 25px;
+  background: ${(props) => (props.active ? '#a34a15' : '#ecdad1')};
+  margin-bottom: 15px;
+  font-size: 15px;
+
+  color: ${(props) => (props.active ? '#ecdad1' : '#a34a15')};
+  border : 1px solid #a34a15;
+
+
+  /* border: 1px solid ${(props) => (props.active ? '#a34a15' : '#ecaaa0')};
+  font-weight: ${(props) => (props.active ? 'bold' : 'normal')}; */
+
+  &:hover {
+    background: #a34a15;
+    color: #ecdad1;
+  }
+
+  & + button {
+    margin-left: 4px;
+  }
+`;
+
+export const Pages = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+export const NavButton = styled.button.attrs((props) => ({
+  disabled: !props.active,
+}))`
+  width: 60px;
+  height: 25px;
+
+  border: 1px solid #ecaaa0;
+  background: #ecdad1;
+  color: #a34a15;
+
+  margin-bottom: 15px;
+  font-size: 15px;
+
+  &:hover {
+    background: #a34a15;
+    color: #ecdad1;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  & + button {
+    margin-left: 4px;
+  }
+`;
+
+export const IssuesFooter = styled.div`
+  strong {
+    display: flex;
+    justify-content: flex-end;
+    color: #a34a15;
+    margin-top: 15px;
   }
 `;

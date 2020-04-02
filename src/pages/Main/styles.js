@@ -1,6 +1,8 @@
 import styled, { keyframes, css } from 'styled-components';
 
-export const Form = styled.form`
+export const Form = styled.form.attrs((props) => ({
+  error: props.error,
+}))`
   margin-top: 30px;
   display: flex;
   flex-direction: row;
@@ -13,6 +15,14 @@ export const Form = styled.form`
     font-size: 16px;
     background: #ecdad1;
   }
+
+  ${(props) =>
+    props.error &&
+    css`
+      input {
+        border: 2px solid red;
+      }
+    `}
 `;
 
 const rotate = keyframes`
@@ -53,6 +63,12 @@ export const SubmitButton = styled.button.attrs((props) => ({
     `}
 `;
 
+export const Warning = styled.div`
+  padding: 10px 15px;
+  display: ${(props) => (props.active ? 'flex' : 'none')};
+  color: red;
+`;
+
 export const List = styled.ul`
   list-style: none;
   margin-top: 30px;
@@ -63,6 +79,23 @@ export const List = styled.ul`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+
+    small {
+      color: #a34a15;
+    }
+
+    small:hover {
+      cursor: pointer;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+    }
+
+    span {
+      margin-left: 10px;
+    }
 
     /* Apply a style to all li's, less to the first */
     & + li {
