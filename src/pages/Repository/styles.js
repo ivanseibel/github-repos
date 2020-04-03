@@ -8,7 +8,6 @@ export const Loading = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  white-space: pre-line;
 `;
 
 export const Owner = styled.header`
@@ -74,6 +73,10 @@ export const IssueList = styled.ul`
         font-size: 16px;
 
         a {
+          display: flex;
+          flex: 1;
+          word-break: break-all;
+
           color: #a34a15;
           text-decoration: none;
 

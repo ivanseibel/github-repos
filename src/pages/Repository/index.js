@@ -69,11 +69,12 @@ class Main extends Component {
     }
   };
 
-  handleFilterButtonClick = (e) => {
+  handleFilterButtonClick = async (e) => {
     const newFilter = e.target.innerText;
 
-    this.setState({
+    await this.setState({
       filter: newFilter,
+      page: 1,
     });
 
     this.getIssues();
